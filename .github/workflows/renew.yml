@@ -51,10 +51,11 @@ jobs:
           echo "--- egress check via socks5://127.0.0.1:40000 ---"
           ip="$(curl -s -m 30 -x socks5h://127.0.0.1:40000 https://api.ip.sb/ip || true)"
           echo "egress IP: ${ip:-<empty>}"
-          case "$ip" in
-            *.*.*) echo "WARP proxy reachable" ;;
-            *) echo "WARP proxy check failed"; exit 1 ;;
-          esac
+          if [ -z "$ip" ]; then
+            echo "WARP proxy check failed"
+            exit 1
+          fi
+          echo "WARP proxy reachable"
 
       - name: Run Renew Script
         env:
